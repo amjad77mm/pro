@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>For Hassaneh — A Question from Amjad</title>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<style>
+  /* ---------- Basic layout ---------- */
+  :root{
+    --bg1:#0f0c29;
+    --bg2:#302b63;
+    --accent:#ff6b9a;
+    --soft:#ffdfe8;
+    --glass: rgba(255,255,255,0.06);
+  }
+  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  body{
+    background: radial-gradient(1200px 800px at 10% 10%, rgba(255,105,180,0.06), transparent 10%),
+                radial-gradient(900px 600px at 90% 90%, rgba(100,149,237,0.04), transparent 15%),
+                linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:#fff;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* ---------- centered card ---------- */
+  .card{
+    width:min(950px,94%);
+    margin:4vh auto;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border-radius:20px;
+    padding:28px;
+    box-shadow: 0 8px 40px rgba(2,6,23,0.6);
+    position:relative;
+    overflow:visible;
+    backdrop-filter: blur(6px) saturate(120%);
+  }
+
+  .top-row{display:flex;align-items:center;gap:16px;}
+  .logo {
+    width:92px;height:92px;border-radius:16px;background:linear-gradient(135deg,var(--accent),#6f5bff);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;color:#fff;box-shadow:0 6px 30px rgba(111,91,255,0.2);
+  }
+
+  .headline{
+    font-size:20px;
+    line-height:1.15;
+    margin-bottom:4px;
+  }
+  .sub{
+    color:rgba(255,255,255,0.75);
+    font-size:14px;
+  }
+
+  /* ---------- love timer ---------- */
+  .timer{
+    margin-top:18px;
+    display:flex;gap:12px;flex-wrap:wrap;align-items:center;
+  }
+  .timercard{
+    padding:12px 14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    min-width:110px;text-align:center;box-shadow:inset 0 -1px 0 rgba(255,255,255,0.02);
+  }
+  .timercard .num{font-size:20px;font-weight:700}
+  .timercard .lbl{font-size:12px;color:rgba(255,255,255,0.75);margin-top:4px}
+
+  /* ---------- message area ---------- */
+  .message{
+    margin-top:28px;font-size:22px;line-height:1.3;
+    letter-spacing:0.1px;
+    font-family: "Georgia", serif;
+  }
+  .message .from{display:block;margin-top:18px;font-size:14px;color:var(--soft);opacity:0.95}
+
+  /* ---------- buttons ---------- */
+  .actions{margin-top:26px;display:flex;gap:12px;align-items:center;}
+  .btn{
+    --pad:14px 22px;
+    padding:var(--pad);
+    border-radius:12px;font-weight:700;border:0;cursor:pointer;font-size:16px;
+    transition:transform .18s ease, box-shadow .18s ease, opacity .18s;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.55);
+  }
+  .btn:active{transform:translateY(2px)}
+  .btn-yes{
+    background:linear-gradient(135deg,#ff8ab3,#ff6b9a);
+    color:white;
+    text-shadow:0 2px 8px rgba(0,0,0,0.2);
+  }
+  .btn-no{
+    background:linear-gradient(135deg,#3b3a52,#1f1830);
+    color:#ffc7da;border:1px solid rgba(255,255,255,0.03);
+  }
+  .btn[disabled]{opacity:0.45;cursor:not-allowed;transform:none;box-shadow:none}
+
+  /* ---------- small footer ---------- */
+  .note{margin-top:18px;color:rgba(255,255,255,0.7);font-size:13px}
+
+  /* ---------- decorative hover floating card ---------- */
+  .floating{
+    position:absolute;right:-40px;top:-40px;width:260px;height:260px;border-radius:160px;
+    background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.03), transparent 20%),
+               linear-gradient(180deg, rgba(255,99,172,0.06), rgba(111,91,255,0.04));
+    transform:rotate(12deg);filter:blur(18px);opacity:0.9;pointer-events:none;
+  }
+
+  /* ---------- click result modal ---------- */
+  .modal{
+    position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.95);opacity:0;pointer-events:none;
+    background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.6));padding:26px;border-radius:14px;z-index:60;
+    width:min(520px,94%);text-align:center;color:#fff;backdrop-filter: blur(6px);
+    transition:all .22s ease;
+  }
+  .modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .modal h2{margin:0 0 8px 0;}
+  .modal p{margin:0 0 18px 0;color:rgba(255,255,255,0.9)}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:700px){
+    .top-row{flex-direction:row;align-items:center}
+    .logo{width:76px;height:76px}
+    .message{font-size:18px}
+    .timercard{min-width:80px}
+  }
+
+  /* ---------- subtle animations ---------- */
+  .sparkle{position:absolute;inset:0;pointer-events:none;z-index:2}
+  .cursor-love{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><text x="0" y="24" font-size="24">❤</text></svg>') 24 24, auto;}
+</style>
+</head>
+<body class="cursor-love">
+  <div class="floating" aria-hidden></div>
+
+  <!-- particle canvas -->
+  <canvas id="c" style="position:fixed;left:0;top:0;pointer-events:none;z-index:1"></canvas>
+
+  <div class="card" role="main" aria-labelledby="proposalTitle">
+    <div class="top-row">
+      <div class="logo">A❤H</div>
+      <div>
+        <div id="proposalTitle" class="headline">A Question From Amjad — For <strong style="color:var(--accent)">Hassaneh</strong></div>
+        <div class="sub">A little world I made to ask you something that matters more than words.</div>
+      </div>
+    </div>
+
+    <!-- timer -->
+    <div class="timer" aria-hidden>
+      <div class="timercard"><div class="num" id="years">0</div><div class="lbl">Years</div></div>
+      <div class="timercard"><div class="num" id="months">0</div><div class="lbl">Months</div></div>
+      <div class="timercard"><div class="num" id="days">0</div><div class="lbl">Days</div></div>
+      <div class="timercard"><div class="num" id="hours">00</div><div class="lbl">Hours</div></div>
+      <div class="timercard"><div class="num" id="minutes">00</div><div class="lbl">Minutes</div></div>
+      <div class="timercard"><div class="num" id="seconds">00</div><div class="lbl">Seconds</div></div>
+    </div>
+
+    <!-- main poetic message -->
+    <div class="message" id="poem">
+      <!-- Unique poetic line (editable) -->
+      <span id="mainLine">
+        The first time I saw you — 26 September 2022 — something quiet in me started counting. Not the clock, but small, steady seconds of a love that grew while I only watched you become brighter every day. Today I open that counting to you, Hassaneh.<br><br>
+        Will you keep counting with me? Will you turn my moments into our forever?
+      </span>
+
+      <span class="from">— Amjad 💞</span>
+    </div>
+
+    <!-- actions -->
+    <div class="actions" id="actions">
+      <button class="btn btn-yes" id="yesBtn" aria-label="Say Yes">YES 💖</button>
+      <button class="btn btn-no" id="noBtn" aria-label="Say No">NO 💔</button>
+      <div style="flex:1"></div>
+      <div class="note" id="expiresNote">Answer available until 31 Dec 2025</div>
+    </div>
+  </div>
+
+  <!-- result modal -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <h2 id="modalTitle">Thank you</h2>
+    <p id="modalMsg">Your answer has been recorded.</p>
+    <div style="display:flex;justify-content:center;gap:10px;margin-top:12px;">
+      <button class="btn btn-yes" id="modalClose">Close</button>
+    </div>
+  </div>
+
+  <!-- subtle sparkles layer -->
+  <div class="sparkle" aria-hidden></div>
+
+  <!-- optional audio: put your audio file aud.mp3 beside index.html or edit src -->
+  <audio id="bgm" loop preload="auto">
+    <source src="aud.mp3" type="audio/mpeg">
+    <!-- If you don't include aud.mp3, it won't play — modern browsers may block autoplay without gesture -->
+  </audio>
+
+<script>
+/* ------------- Configuration for EmailJS -------------
+   Create an EmailJS account and replace these placeholders:
+   - emailjsUserID (Public key / user id)
+   - emailjsServiceID (service id e.g., 'service_xxx')
+   - emailjsTemplateID (template id e.g., 'template_yyy')
+   See instructions below the code block.
+*/
+const emailjsUserID = 'YOUR_EMAILJS_USER_ID';     // <-- replace
+const emailjsServiceID = 'YOUR_SERVICE_ID';      // <-- replace
+const emailjsTemplateID = 'YOUR_TEMPLATE_ID';    // <-- replace
+
+// who is visiting (for email subject) - keep blank; EmailJS template should use reply_to or your configured email
+const PROPOSER_NAME = 'Amjad';
+const PROPOSEE_NAME = 'Hassaneh';
+
+// countdown / expiration logic
+const loveStart = new Date('2022-09-26T00:00:00'); // love begins
+const expireDate = new Date('2025-12-31T23:59:59'); // expiration
+
+// init EmailJS if configured (we load the SDK dynamically if placeholders changed)
+(function initEmailJS(){
+  if(!emailjsUserID || !emailjsServiceID || !emailjsTemplateID || emailjsUserID.includes('YOUR_')) return;
+  const s = document.createElement('script');
+  s.src = 'https://cdn.emailjs.com/sdk/3.2.0/email.min.js';
+  s.onload = function(){ emailjs.init(emailjsUserID); console.log('EmailJS initialized'); };
+  document.head.appendChild(s);
+})();
+
+/* ----------- UI and timer ----------- */
+const ids = ['years','months','days','hours','minutes','seconds'].map(id=>document.getElementById(id));
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modalTitle');
+const modalMsg = document.getElementById('modalMsg');
+const yesBtn = document.getElementById('yesBtn');
+const noBtn = document.getElementById('noBtn');
+const modalClose = document.getElementById('modalClose');
+const expiresNote = document.getElementById('expiresNote');
+
+function pad(n){return n<10?('0'+n):(''+n);}
+function updateTimer(){
+  const now = new Date();
+  if(now > expireDate){
+    // expired
+    expiresNote.textContent = "This proposal has expired. My love continues, always.";
+    yesBtn.disabled = true; noBtn.disabled = true;
+    // stop timer UI but show final time difference
+  }
+  // calculate difference in full Y M D H M S since loveStart
+  let from = new Date(loveStart);
+  let to = now;
+  // compute years/months/days manually to be precise
+  let years = to.getFullYear() - from.getFullYear();
+  let months = to.getMonth() - from.getMonth();
+  let days = to.getDate() - from.getDate();
+  let hours = to.getHours() - from.getHours();
+  let minutes = to.getMinutes() - from.getMinutes();
+  let seconds = to.getSeconds() - from.getSeconds();
+
+  if(seconds < 0){ seconds += 60; minutes -=1;}
+  if(minutes < 0){ minutes +=60; hours -=1;}
+  if(hours < 0){ hours +=24; days -=1;}
+  if(days < 0){
+    // borrow from previous month
+    const prevMonth = new Date(to.getFullYear(), to.getMonth(), 0).getDate(); // days in prev month
+    days += prevMonth;
+    months -=1;
+  }
+  if(months < 0){ months +=12; years -=1;}
+  if(years < 0) years = 0; // safety
+
+  // update DOM
+  document.getElementById('years').textContent = years;
+  document.getElementById('months').textContent = months;
+  document.getElementById('days').textContent = days;
+  document.getElementById('hours').textContent = pad(hours);
+  document.getElementById('minutes').textContent = pad(minutes);
+  document.getElementById('seconds').textContent = pad(seconds);
+}
+updateTimer();
+setInterval(updateTimer, 1000);
+
+/* ----------- Email sending logic (EmailJS) ----------- */
+function sendEmail(choice){
+  const now = new Date();
+  const timeString = now.toLocaleString('en-GB', { timeZone:'Asia/Karachi' }); // show PK time
+  // if EmailJS not configured, fallback to showing msg (and we store to localStorage as backup)
+  if(!emailjs || !emailjs.send || emailjsUserID.includes('YOUR_')){
+    // store locally as backup
+    const key = 'proposal_answer';
+    const data = { name: PROPOSEE_NAME, answer: choice, time: timeString };
+    localStorage.setItem(key, JSON.stringify(data));
+    console.warn('EmailJS not configured — saved to localStorage as backup:', data);
+    return Promise.resolve({ok:false, fallback:true, data});
+  }
+
+  const templateParams = {
+    proposer_name: PROPOSER_NAME,
+    proposee_name: PROPOSEE_NAME,
+    answer: choice,
+    timestamp: timeString,
+    message: `${PROPOSEE_NAME} clicked ${choice} at ${timeString}`
+  };
+
+  return emailjs.send(emailjsServiceID, emailjsTemplateID, templateParams)
+    .then(res => ({ok:true,res}))
+    .catch(err => ({ok:false,err}));
+}
+
+/* click handlers */
+function handleClick(choice){
+  // disable buttons after click to avoid double submits
+  yesBtn.disabled = true; noBtn.disabled = true;
+  // show modal instantly
+  modalTitle.textContent = (choice === 'YES') ? 'You made my heart!' : 'Thank you for being honest';
+  modalMsg.textContent = (choice === 'YES') ? `If you said yes, I promise to cherish you every day. You answered: ${choice}.` : `This means a lot — you answered: ${choice}.`;
+  showModal();
+
+  // send email
+  sendEmail(choice).then(result=>{
+    if(result && result.ok){
+      console.log('Email sent via EmailJS', result);
+    } else if(result && result.fallback){
+      modalMsg.textContent += " (Note: Email not configured; response saved locally on this device.)";
+    } else {
+      modalMsg.textContent += " (There was an error sending the email; I've saved the response locally.)";
+      console.error('EmailJS send error', result.err);
+    }
+  });
+}
+
+/* attach handlers */
+yesBtn.addEventListener('click', ()=>handleClick('YES'));
+noBtn.addEventListener('click', ()=>handleClick('NO'));
+modalClose.addEventListener('click', ()=>hideModal());
+
+function showModal(){ modal.classList.add('show'); modal.setAttribute('aria-hidden','false'); }
+function hideModal(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); }
+
+/* ------------- small particle system: hearts + stars ------------- */
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+function rand(min,max){ return Math.random()*(max-min)+min; }
+function makeParticle(){
+  const t = Math.random();
+  const isHeart = Math.random() < 0.36;
+  const p = {
+    x: rand(0, W),
+    y: rand(-50, H/2),
+    vx: rand(-0.2,0.2),
+    vy: isHeart ? rand(0.3,1.2) : rand(0.1,0.6),
+    size: isHeart ? rand(6,22) : rand(1,4),
+    life: rand(80,300),
+    age:0,
+    hue: isHeart ? rand(330,350) : rand(200,260),
+    alpha: rand(0.35,0.95),
+    heart: isHeart
+  };
+  particles.push(p);
+}
+for(let i=0;i<140;i++) makeParticle();
+
+function drawHeart(x,y,s,alpha,h){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(s/24,s/24);
+  ctx.beginPath();
+  ctx.moveTo(0,0);
+  ctx.bezierCurveTo(-12,-14,-24, -2,0,18);
+  ctx.bezierCurveTo(24,-2,12,-14,0,0);
+  ctx.closePath();
+  ctx.fillStyle = `hsla(${h},85%,65%,${alpha})`;
+  ctx.fill();
+  ctx.restore();
+}
+
+function tick(){
+  ctx.clearRect(0,0,W,H);
+  // subtle vignette
+  ctx.fillStyle = 'rgba(8,6,14,0.08)';
+  ctx.fillRect(0,0,W,H);
+
+  // draw particles
+  for(let i=particles.length-1;i>=0;i--){
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.age++;
+    p.alpha *= 1 - (0.0008 * (p.size));
+    if(p.heart){
+      drawHeart(p.x, p.y, p.size, p.alpha, p.hue);
+    } else {
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+      ctx.fillStyle = `hsla(${p.hue},70%,75%,${p.alpha})`;
+      ctx.fill();
+    }
+    if(p.age > p.life || p.y > H+50 || p.alpha < 0.02){
+      particles.splice(i,1);
+      if(Math.random() < 0.8) makeParticle();
+    }
+  }
+  requestAnimationFrame(tick);
+}
+tick();
+
+/* ------------- tiny confetti burst on YES (keeps it tasteful) ------------- */
+function confettiBurst(){
+  const n = 42;
+  for(let i=0;i<n;i++){
+    const el = document.createElement('div');
+    el.style.position='fixed';
+    el.style.left=(W/2 + rand(-80,80))+'px';
+    el.style.top=(H/2 + rand(-40,40))+'px';
+    el.style.width='8px'; el.style.height='12px';
+    el.style.borderRadius='2px';
+    el.style.background = `linear-gradient(180deg, rgba(255,${Math.floor(rand(100,200))},${Math.floor(rand(100,200))},1), rgba(255,255,255,0.8))`;
+    el.style.transform = `rotate(${rand(0,360)}deg)`;
+    el.style.zIndex = 120;
+    el.style.pointerEvents='none';
+    document.body.appendChild(el);
+    const dx = rand(-6,6), dy = rand(-6,-14), rot = rand(-720,720);
+    el.animate([
+      { transform: `translate(0,0) rotate(0deg)`, opacity:1},
+      { transform: `translate(${dx*30}px,${dy*30}px) rotate(${rot}deg)`, opacity:0}
+    ], { duration: 1400+Math.random()*900, easing:'cubic-bezier(.12,.6,.18,1)'});
+    setTimeout(()=>el.remove(), 2500);
+  }
+}
+
+/* show confetti only on YES */
+yesBtn.addEventListener('click', ()=>confettiBurst());
+
+/* ------------- autoplay background music politely ------------- */
+const bgm = document.getElementById('bgm');
+function tryPlayMusic(){ 
+  if(!bgm) return;
+  bgm.volume = 0.25;
+  bgm.play().catch(()=>{ /* autoplay blocked; will play on user gesture */ });
+}
+// attempt to play after user interacts
+document.addEventListener('click', tryPlayMusic, {once:true});
+document.addEventListener('touchstart', tryPlayMusic, {once:true});
+tryPlayMusic();
+
+/* enhance accessible keyboard usage */
+yesBtn.addEventListener('keyup', (e)=>{ if(e.key==='Enter') yesBtn.click(); });
+noBtn.addEventListener('keyup', (e)=>{ if(e.key==='Enter') noBtn.click(); });
+
+/* small progressive enhancement: show that EmailJS isn't configured */
+(function showEmailHint(){
+  if(emailjsUserID.includes('YOUR_') || emailjsServiceID.includes('YOUR_') || emailjsTemplateID.includes('YOUR_')){
+    const n = document.createElement('div');
+    n.style.fontSize='12px'; n.style.color='rgba(255,255,255,0.75)';
+    n.style.marginTop='10px';
+    n.textContent = "Note: Email notifications need EmailJS setup (instructions below). Without it, clicks are saved locally as a fallback.";
+    document.querySelector('.card').appendChild(n);
+  }
+})();
+</script>
+
+<!-- ------------- END OF FILE ------------- -->
+</body>
+</html>
