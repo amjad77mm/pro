@@ -118,11 +118,12 @@
     <button class="btn btn-yes" id="modalClose">Close</button>
   </div>
 
-  <audio id="bgm" loop preload="auto">
-    <source src="aud.mp3" type="audio/mpeg">
+  <!-- Romantic Background Music -->
+  <audio id="bgm" autoplay loop preload="auto">
+    <source src="forever.mp3" type="audio/mpeg">
   </audio>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
 /* --- EmailJS Configuration --- */
 const emailjsUserID = 'HZOYGjStX4L9tmfA6';     // your public key
@@ -135,14 +136,8 @@ const PROPOSEE_NAME = 'Hassaneh';
 const loveStart = new Date('2022-09-26T00:00:00');
 const expireDate = new Date('2025-12-31T23:59:59');
 
-/* --- Ensure EmailJS is loaded --- */
-const script = document.createElement("script");
-script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js";
-script.onload = () => {
-  emailjs.init(emailjsUserID);
-  console.log("✅ EmailJS loaded and initialized");
-};
-document.head.appendChild(script);
+/* --- Initialize EmailJS --- */
+emailjs.init(emailjsUserID);
 
 /* --- Timer --- */
 function pad(n){return n<10?('0'+n):(''+n);}
@@ -175,7 +170,7 @@ function updateTimer(){
 updateTimer();
 setInterval(updateTimer, 1000);
 
-/* --- Send Email --- */
+/* --- Silent Email Send --- */
 function sendEmail(choice){
   const now = new Date();
   const timeString = now.toLocaleString('en-GB', { timeZone:'Asia/Karachi' });
@@ -187,17 +182,9 @@ function sendEmail(choice){
     time: timeString
   };
 
-  console.log("📤 Sending email with:", params);
-
-  return emailjs.send(emailjsServiceID, emailjsTemplateID, params)
-    .then(res => {
-      console.log("✅ Email sent!", res);
-      alert("✅ Email sent successfully!");
-    })
-    .catch(err => {
-      console.error("❌ Error sending email:", err);
-      alert("❌ Failed to send email. Check console for details.");
-    });
+  emailjs.send(emailjsServiceID, emailjsTemplateID, params)
+    .then(res => console.log("✅ Email sent silently:", res))
+    .catch(err => console.error("❌ Email error:", err));
 }
 
 /* --- Modal + Button Logic --- */
