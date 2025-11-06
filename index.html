@@ -119,9 +119,35 @@
   </div>
 
   <!-- Romantic Background Music -->
-  <audio id="bgm" autoplay loop preload="auto">
-    <source src="forever.mp3" type="audio/mpeg">
-  </audio>
+  <audio id="bgm" loop preload="auto">
+  <source src="forever.mp3.mpeg" type="audio/mpeg">
+</audio>
+
+<script>
+const bgm = document.getElementById('bgm');
+
+// Fade-in effect for smooth start
+function fadeInMusic() {
+  if (!bgm) return;
+  bgm.volume = 0;
+  const targetVolume = 0.4; // gentle volume
+  const fade = setInterval(() => {
+    if (bgm.volume < targetVolume) {
+      bgm.volume = Math.min(bgm.volume + 0.02, targetVolume);
+    } else {
+      clearInterval(fade);
+    }
+  }, 200);
+}
+
+function tryPlayMusic() {
+  bgm.play().then(() => fadeInMusic()).catch(() => {});
+}
+
+// Autoplay once she taps or clicks anywhere
+document.addEventListener("click", tryPlayMusic, { once: true });
+document.addEventListener("touchstart", tryPlayMusic, { once: true });
+</script>
 
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
